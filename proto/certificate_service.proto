@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+service CertificateService {
+    rpc GetCertificate(CertificateRequest) returns (CertificateResponse) {}
+}
+
+message CertificateRequest {
+    string Domain = 1;
+    string Subdomain = 2; // Use * for wildcard cert
+}
+
+message CertificateResponse {
+    string Domain = 1;
+    string CertURL = 2;
+    string CertStableURL = 3;
+    bytes PrivateKey = 4;
+    bytes Certificate = 5;
+    bytes IssuerCertificate = 6;
+    bytes CSR = 7;
+}
