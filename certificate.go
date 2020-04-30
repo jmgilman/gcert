@@ -29,7 +29,7 @@ func (u *User) GetPrivateKey() crypto.PrivateKey {
 	return u.key
 }
 
-func NewUserFromConfig(c *Config, keyParser KeyParser) (*User, error) {
+func NewUserFromConfig(c *AppConfig, keyParser KeyParser) (*User, error) {
 	key, err := keyParser(c.PrivateKey)
 	if err != nil {
 		return &User{}, err
@@ -50,7 +50,7 @@ func NewClientConfigFromUser(u *User, endpoint string) *lego.Config {
 	return config
 }
 
-func NewProviderConfigFromConfig(c *Config) (providerConfig *cloudflare.Config) {
+func NewProviderConfigFromConfig(c *AppConfig) (providerConfig *cloudflare.Config) {
 	providerConfig = cloudflare.NewDefaultConfig()
 	providerConfig.AuthEmail = c.Email
 	providerConfig.AuthToken = c.CFToken
@@ -65,7 +65,7 @@ func GetRequest(domains []string) certificate.ObtainRequest {
 	}
 }
 
-func RequestCert(endpoint string, domains []string, c *Config) (*cservice.CertificateResponse, error) {
+func RequestCert(endpoint string, domains []string, c *AppConfig) (*cservice.CertificateResponse, error) {
 	// Setup a new Lego client
 	user, err := NewUserFromConfig(c, certcrypto.ParsePEMPrivateKey)
 	if err != nil {

@@ -24,4 +24,8 @@ func TestNewConfigFromEnv(t *testing.T) {
 	assert.Equal(t, result.PrivateKey, []byte{})
 	assert.Equal(t, result.Email, "testing")
 	assert.Equal(t, result.URI, "testing")
+	assert.Equal(t, result.VaultCfg.Address, "testing")
+	assert.Equal(t, result.VaultCfg.Path, "testing")
+	assert.Equal(t, result.VaultCfg.RoleID, "testing")
+	assert.Equal(t, result.VaultCfg.SecretID, "testing")
 }

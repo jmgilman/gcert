@@ -7,7 +7,7 @@ import (
 )
 
 type certServer struct {
-	config *Config
+	config *AppConfig
 }
 
 var EndPoints = [...]string{

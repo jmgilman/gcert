@@ -12,9 +12,9 @@ func MockParser(key []byte) (crypto.PrivateKey, error) {
 	return rsa.PrivateKey{}, nil
 }
 
-func GetTestConfig(t *testing.T) *Config {
+func GetTestConfig(t *testing.T) *AppConfig {
 	t.Helper()
-	return &Config{
+	return &AppConfig{
 		Email:      "testing",
 		PrivateKey: []byte{},
 		URI:        "testing",
