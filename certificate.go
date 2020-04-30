@@ -17,6 +17,8 @@ type User struct {
 	key          crypto.PrivateKey
 }
 
+type KeyParser func([]byte) (crypto.PrivateKey, error)
+
 func (u *User) GetEmail() string {
 	return u.Email
 }
@@ -27,49 +29,64 @@ func (u *User) GetPrivateKey() crypto.PrivateKey {
 	return u.key
 }
 
-func RequestCert(endPoint string, domains []string, c *Config) (*cservice.CertificateResponse, error) {
-	key, err := certcrypto.ParsePEMPrivateKey(c.PrivateKey)
+func NewUserFromConfig(c *Config, keyParser KeyParser) (*User, error) {
+	key, err := keyParser(c.PrivateKey)
 	if err != nil {
-		return &cservice.CertificateResponse{}, err
+		return &User{}, err
 	}
-	user := User{
+
+	return &User{
 		Email: c.Email,
 		key:   key,
 		Registration: &registration.Resource{
 			URI: c.URI,
 		},
-	}
+	}, nil
+}
 
+func NewClientConfigFromUser(u *User, endpoint string) *lego.Config {
+	config := lego.NewConfig(u)
+	config.CADirURL = endpoint
+	return config
+}
+
+func NewProviderConfigFromConfig(c *Config) (providerConfig *cloudflare.Config) {
+	providerConfig = cloudflare.NewDefaultConfig()
+	providerConfig.AuthEmail = c.Email
+	providerConfig.AuthToken = c.CFToken
+
+	return
+}
+
+func GetRequest(domains []string) certificate.ObtainRequest {
+	return certificate.ObtainRequest{
+		Domains: domains,
+		Bundle:  true,
+	}
+}
+
+func RequestCert(endpoint string, domains []string, c *Config) (*cservice.CertificateResponse, error) {
 	// Setup a new Lego client
-	config := lego.NewConfig(&user)
-	config.CADirURL = endPoint
-	client, err := lego.NewClient(config)
+	user, err := NewUserFromConfig(c, certcrypto.ParsePEMPrivateKey)
+	if err != nil {
+		return &cservice.CertificateResponse{}, err
+	}
+	client, err := lego.NewClient(NewClientConfigFromUser(user, endpoint))
 	if err != nil {
 		return &cservice.CertificateResponse{}, err
 	}
 
 	// Configure the CloudFlare provider
-	providerConfig := cloudflare.NewDefaultConfig()
-	providerConfig.AuthEmail = c.Email
-	providerConfig.AuthToken = c.CFToken
-
-	provider, err := cloudflare.NewDNSProviderConfig(providerConfig)
+	provider, err := cloudflare.NewDNSProviderConfig(NewProviderConfigFromConfig(c))
 	if err != nil {
 		return &cservice.CertificateResponse{}, err
 	}
-
 	if err := client.Challenge.SetDNS01Provider(provider); err != nil {
 		return &cservice.CertificateResponse{}, err
 	}
 
-	// Setup and send certificate request
-	request := certificate.ObtainRequest{
-		Domains: domains,
-		Bundle:  true,
-	}
-
-	log.Printf("Sending certificate request to %s\n...", endPoint)
-	certificates, err := client.Certificate.Obtain(request)
+	log.Printf("Sending certificate request to %s\n...", endpoint)
+	certificates, err := client.Certificate.Obtain(GetRequest(domains))
 	if err != nil {
 		return &cservice.CertificateResponse{}, err
 	}
