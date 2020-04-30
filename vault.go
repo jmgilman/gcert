@@ -31,7 +31,8 @@ func AuthenticateClient(c *api.Client, config *AppConfig) error {
 	return nil
 }
 
-func WriteCertificate(c *api.Client, r *certificate.Resource, domains []string) error {
+func WriteCertificate(c *api.Client, r *certificate.Resource, domains []string) ([]string, error) {
+	var paths []string
 	for _, domain := range domains {
 		path := basePath + domain
 		data := map[string]interface{}{
@@ -44,8 +45,9 @@ func WriteCertificate(c *api.Client, r *certificate.Resource, domains []string) 
 
 		_, err := c.Logical().Write(path, data)
 		if err != nil {
-			return err
+			return paths, err
 		}
+		paths = append(paths, path)
 	}
-	return nil
+	return paths, nil
 }

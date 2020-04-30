@@ -85,19 +85,32 @@ func RequestCert(endpoint string, domains []string, c *AppConfig) (*cservice.Cer
 		return &cservice.CertificateResponse{}, err
 	}
 
-	log.Printf("Sending certificate request to %s\n...", endpoint)
+	log.Printf("Sending certificate request to %s\n", endpoint)
 	certificates, err := client.Certificate.Obtain(GetRequest(domains))
 	if err != nil {
 		return &cservice.CertificateResponse{}, err
 	}
 
+	log.Println("Authenticating against vault at ", c.VaultCfg.Address)
+	vaultClient, err := NewDefaultClient(c)
+	if err != nil {
+		return &cservice.CertificateResponse{}, err
+	}
+	if err := AuthenticateClient(vaultClient, c); err != nil {
+		return &cservice.CertificateResponse{}, err
+	}
+
+	log.Println("Writing certificates to Vault")
+	paths, err := WriteCertificate(vaultClient, certificates, domains)
+	if err != nil {
+		return &cservice.CertificateResponse{
+			VaultPaths: paths,
+			Success:    false,
+		}, err
+	}
+
 	return &cservice.CertificateResponse{
-		Domains:           domains,
-		CertURL:           certificates.CertURL,
-		CertStableURL:     certificates.CertStableURL,
-		PrivateKey:        certificates.PrivateKey,
-		Certificate:       certificates.Certificate,
-		IssuerCertificate: certificates.IssuerCertificate,
-		CSR:               certificates.CSR,
+		VaultPaths: paths,
+		Success:    true,
 	}, nil
 }

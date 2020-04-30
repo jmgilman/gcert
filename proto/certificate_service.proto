@@ -16,11 +16,6 @@ message CertificateRequest {
 }
 
 message CertificateResponse {
-    repeated string domains = 1;
-    string certURL = 2;
-    string certStableURL = 3;
-    bytes privateKey = 4;
-    bytes certificate = 5;
-    bytes issuerCertificate = 6;
-    bytes CSR = 7;
+    repeated string vaultPaths = 1;
+    bool success = 2;
 }
