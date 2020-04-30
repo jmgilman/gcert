@@ -15,6 +15,7 @@ var EndPoints = [...]string{
 	"https://acme-staging-v02.api.letsencrypt.org/directory",
 }
 
+// GetCertificate implements the RPC interface for the GetCertificate function
 func (c *certServer) GetCertificate(ctx context.Context, in *cservice.CertificateRequest) (resp *cservice.CertificateResponse, err error) {
 	log.Printf("Received certificate request for %s\n", in.Domains)
 	resp, err = RequestCert(EndPoints[in.Endpoint], in.Domains, c.config)

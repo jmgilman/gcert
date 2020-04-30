@@ -12,6 +12,7 @@ import (
 	"net"
 )
 
+// main reads configuration data from the environment and starts the RPC server
 func main() {
 	address := flag.String("address", "localhost", "Address to bind to")
 	port := flag.Int("port", 8080, "Port to listen on")

@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// AppConfig contains the configuration data needed for the gcert server to operate
 type AppConfig struct {
 	Email      string
 	PrivateKey []byte
@@ -13,6 +14,7 @@ type AppConfig struct {
 	VaultCfg   VaultConfig
 }
 
+// VaultConfig contains the configuration data for authenticating and writing against a Vault server
 type VaultConfig struct {
 	Address  string
 	Path     string
@@ -20,8 +22,10 @@ type VaultConfig struct {
 	SecretID string
 }
 
+// KeyReader is used to read the content of a file at the given path
 type KeyReader func(filename string) ([]byte, error)
 
+// environmentVars contains a list of all required environment variables for the gcert service to operate
 var environmentVars = [...]string{
 	"GCERT_CF_TOKEN",
 	"GCERT_USER_EMAIL",
@@ -33,6 +37,8 @@ var environmentVars = [...]string{
 	"VAULT_SECRET_ID",
 }
 
+// NewConfigFromEnv validates the required environment variables are present (and not empty) and then returns an
+// AppConfig configured using those environment variables.
 func NewConfigFromEnv(reader KeyReader) (*AppConfig, error) {
 	// Make sure all environment variables have values
 	for _, envVar := range environmentVars {

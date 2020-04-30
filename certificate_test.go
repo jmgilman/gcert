@@ -48,8 +48,8 @@ func TestNewClientConfigFromUser(t *testing.T) {
 	assert.Equal(t, config.CADirURL, "testing")
 }
 
-func TestNewProviderConfigFromConfig(t *testing.T) {
-	config := NewProviderConfigFromConfig(GetTestConfig(t))
+func TestNewCloudFlareConfig(t *testing.T) {
+	config := NewCloudFlareConfig(GetTestConfig(t))
 	assert.Equal(t, config.AuthEmail, "testing")
 	assert.Equal(t, config.AuthToken, "testing")
 }
