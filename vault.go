@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/go-acme/lego/v3/certificate"
 	"github.com/hashicorp/vault/api"
@@ -38,9 +39,9 @@ func WriteCertificate(c *api.Client, r *certificate.Resource, domains []string) 
 		data := map[string]interface{}{
 			"cert_url":           r.CertURL,
 			"cert_stable_url":    r.CertStableURL,
-			"private_key":        r.PrivateKey,
-			"certificate":        r.Certificate,
-			"issuer_certificate": r.IssuerCertificate,
+			"private_key":        base64.StdEncoding.EncodeToString(r.PrivateKey),
+			"certificate":        base64.StdEncoding.EncodeToString(r.Certificate),
+			"issuer_certificate": base64.StdEncoding.EncodeToString(r.IssuerCertificate),
 		}
 
 		_, err := c.Logical().Write(path, data)

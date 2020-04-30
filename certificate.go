@@ -109,6 +109,7 @@ func RequestCert(endpoint string, domains []string, c *AppConfig) (*cservice.Cer
 		}, err
 	}
 
+	log.Println("Done!")
 	return &cservice.CertificateResponse{
 		VaultPaths: paths,
 		Success:    true,

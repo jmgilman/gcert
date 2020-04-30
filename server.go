@@ -15,7 +15,11 @@ var EndPoints = [...]string{
 	"https://acme-staging-v02.api.letsencrypt.org/directory",
 }
 
-func (c *certServer) GetCertificate(ctx context.Context, in *cservice.CertificateRequest) (*cservice.CertificateResponse, error) {
+func (c *certServer) GetCertificate(ctx context.Context, in *cservice.CertificateRequest) (resp *cservice.CertificateResponse, err error) {
 	log.Printf("Received certificate request for %s\n", in.Domains)
-	return RequestCert(EndPoints[in.Endpoint], in.Domains, c.config)
+	resp, err = RequestCert(EndPoints[in.Endpoint], in.Domains, c.config)
+	if err != nil {
+		log.Println("Error requesting new certificates: ", err)
+	}
+	return
 }
