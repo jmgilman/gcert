@@ -28,7 +28,7 @@ func NewConfigFromEnv() (*Config, error) {
 		}
 	}
 
-	keyPath := os.Getenv("USER_KEY_FILE")
+	keyPath := os.Getenv("GCERT_USER_KEY_FILE")
 	if _, err := os.Stat(keyPath); os.IsNotExist(err) {
 		return &Config{}, fmt.Errorf("cannot find user key at %s: %s", keyPath, err)
 	}

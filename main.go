@@ -11,8 +11,6 @@ import (
 	"net"
 )
 
-const letsEncryptURL = "https://acme-staging-v02.api.letsencrypt.org/directory"
-
 func main() {
 	address := flag.String("address", "localhost", "Address to bind to")
 	port := flag.Int("port", 8080, "Port to listen on")
