@@ -7,17 +7,22 @@ import (
 )
 
 type Config struct {
-	Endpoint string
-	Email string
-	Key []byte
-	APIKey string
-	APIToken string
+	Email      string
+	PrivateKey []byte
+	URI        string
+	CFToken    string
+}
+
+var environmentVars = [...]string{
+	"GCERT_CF_TOKEN",
+	"GCERT_USER_EMAIL",
+	"GCERT_USER_KEY_FILE",
+	"GCERT_USER_URI",
 }
 
 func NewConfigFromEnv() (*Config, error) {
 	// Make sure all environment variables have values
-	envVars := []string{"USER_EMAIL", "USER_KEY_FILE", "API_KEY", "API_TOKEN"}
-	for _, envVar := range envVars {
+	for _, envVar := range environmentVars {
 		if os.Getenv(envVar) == "" {
 			return &Config{}, fmt.Errorf("%s environment variable must be set and not empty", envVar)
 		}
@@ -33,10 +38,10 @@ func NewConfigFromEnv() (*Config, error) {
 		return &Config{}, fmt.Errorf("error reading user key at %s: %s", keyPath, err)
 	}
 
-	return &Config {
-		Email: os.Getenv("USER_EMAIL"),
-		Key: keyBytes,
-		APIKey: os.Getenv("API_KEY"),
-		APIToken: os.Getenv("API_TOKEN"),
+	return &Config{
+		Email:      os.Getenv("GCERT_USER_EMAIL"),
+		PrivateKey: keyBytes,
+		URI:        os.Getenv("GCERT_USER_URI"),
+		CFToken:    os.Getenv("GCERT_CF_TOKEN"),
 	}, nil
 }

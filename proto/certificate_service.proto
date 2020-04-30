@@ -1,20 +1,26 @@
 syntax = "proto3";
 
+option go_package = "github.com/jmgilman/gcert";
+
 service CertificateService {
     rpc GetCertificate(CertificateRequest) returns (CertificateResponse) {}
 }
 
 message CertificateRequest {
-    string Domain = 1;
-    string Subdomain = 2; // Use * for wildcard cert
+    repeated string domains = 1;
+    enum Endpoint {
+        LE = 0;
+        LE_STAGING = 1;
+    }
+    Endpoint endpoint = 2;
 }
 
 message CertificateResponse {
-    string Domain = 1;
-    string CertURL = 2;
-    string CertStableURL = 3;
-    bytes PrivateKey = 4;
-    bytes Certificate = 5;
-    bytes IssuerCertificate = 6;
+    repeated string domains = 1;
+    string certURL = 2;
+    string certStableURL = 3;
+    bytes privateKey = 4;
+    bytes certificate = 5;
+    bytes issuerCertificate = 6;
     bytes CSR = 7;
 }
