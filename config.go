@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 )
 
@@ -13,6 +12,8 @@ type Config struct {
 	CFToken    string
 }
 
+type KeyReader func(filename string) ([]byte, error)
+
 var environmentVars = [...]string{
 	"GCERT_CF_TOKEN",
 	"GCERT_USER_EMAIL",
@@ -20,7 +21,7 @@ var environmentVars = [...]string{
 	"GCERT_USER_URI",
 }
 
-func NewConfigFromEnv() (*Config, error) {
+func NewConfigFromEnv(reader KeyReader) (*Config, error) {
 	// Make sure all environment variables have values
 	for _, envVar := range environmentVars {
 		if os.Getenv(envVar) == "" {
@@ -28,14 +29,9 @@ func NewConfigFromEnv() (*Config, error) {
 		}
 	}
 
-	keyPath := os.Getenv("GCERT_USER_KEY_FILE")
-	if _, err := os.Stat(keyPath); os.IsNotExist(err) {
-		return &Config{}, fmt.Errorf("cannot find user key at %s: %s", keyPath, err)
-	}
-
-	keyBytes, err := ioutil.ReadFile(keyPath)
+	keyBytes, err := reader(os.Getenv("GCERT_USER_KEY_FILE"))
 	if err != nil {
-		return &Config{}, fmt.Errorf("error reading user key at %s: %s", keyPath, err)
+		return &Config{}, fmt.Errorf("error reading user key at %s: %s", os.Getenv("GCERT_USER_KEY_FILE"), err)
 	}
 
 	return &Config{
