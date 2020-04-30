@@ -15,7 +15,8 @@ type certServer struct {
 }
 
 func (c *certServer) GetCertificate(ctx context.Context, in *cservice.CertificateRequest) (*cservice.CertificateResponse, error) {
-	return &cservice.CertificateResponse{}, nil
+	cert := &cservice.CertificateResponse{Domain: in.Domain}
+	return cert, nil
 }
 
 func main() {
