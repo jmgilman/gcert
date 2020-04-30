@@ -1,62 +1,15 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	cservice "github.com/jmgilman/gcert/proto"
 	"google.golang.org/grpc"
-	"io/ioutil"
 	"log"
 	"net"
-	"os"
 )
 
 const letsEncryptURL = "https://acme-staging-v02.api.letsencrypt.org/directory"
-
-type certServer struct {
-	config *Config
-}
-
-type Config struct {
-	Endpoint string
-	Email string
-	Key []byte
-	APIKey string
-	APIToken string
-}
-
-func (c *certServer) GetCertificate(ctx context.Context, in *cservice.CertificateRequest) (*cservice.CertificateResponse, error) {
-	cert := &cservice.CertificateResponse{Domain: in.Domain}
-	return cert, nil
-}
-
-func NewConfigFromEnv() (*Config, error) {
-	// Make sure all environment variables have values
-	envVars := []string{"USER_EMAIL", "USER_KEY_FILE", "API_KEY", "API_TOKEN"}
-	for _, envVar := range envVars {
-		if os.Getenv(envVar) == "" {
-			return &Config{}, fmt.Errorf("%s environment variable must be set", envVar)
-		}
-	}
-
-	keyPath := os.Getenv("USER_KEY_FILE")
-	if _, err := os.Stat(keyPath); os.IsNotExist(err) {
-		return &Config{}, fmt.Errorf("cannot find user key at %s: %s", keyPath, err)
-	}
-
-	keyBytes, err := ioutil.ReadFile(keyPath)
-	if err != nil {
-		return &Config{}, fmt.Errorf("error reading user key at %s: %s", keyPath, err)
-	}
-
-	return &Config {
-		Email: os.Getenv("USER_EMAIL"),
-		Key: keyBytes,
-		APIKey: os.Getenv("API_KEY"),
-		APIToken: os.Getenv("API_TOKEN"),
-	}, nil
-}
 
 func main() {
 	address := flag.String("address", "localhost", "Address to bind to")
