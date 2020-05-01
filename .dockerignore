@@ -5,3 +5,4 @@ LICENSE
 .dockerignore
 .gitignore
 *.md
+run.sh

@@ -1,14 +1,11 @@
 package main
 
 import (
+	"encoding/base64"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
-
-func MockReader(filepath string) ([]byte, error) {
-	return []byte{}, nil
-}
 
 func TestNewConfigFromEnv(t *testing.T) {
 	// Setup environment
@@ -18,10 +15,16 @@ func TestNewConfigFromEnv(t *testing.T) {
 		}
 	}
 
-	result, err := NewConfigFromEnv(MockReader)
+	// Setup fake key
+	fakeKey := base64.StdEncoding.EncodeToString([]byte("testing"))
+	if err := os.Setenv("GCERT_USER_KEY", fakeKey); err != nil {
+		t.Fatal(err)
+	}
+
+	result, err := NewConfigFromEnv()
 	assert.Empty(t, err)
 	assert.Equal(t, result.CFToken, "testing")
-	assert.Equal(t, result.PrivateKey, []byte{})
+	assert.Equal(t, result.PrivateKey, []byte("testing"))
 	assert.Equal(t, result.Email, "testing")
 	assert.Equal(t, result.URI, "testing")
 	assert.Equal(t, result.VaultCfg.Address, "testing")

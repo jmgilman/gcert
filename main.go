@@ -7,7 +7,6 @@ import (
 	"fmt"
 	cservice "github.com/jmgilman/gcert/proto"
 	"google.golang.org/grpc"
-	"io/ioutil"
 	"log"
 	"net"
 )
@@ -20,9 +19,9 @@ func main() {
 
 	log.Println("Loading environment...")
 
-	config, err := NewConfigFromEnv(ioutil.ReadFile)
+	config, err := NewConfigFromEnv()
 	if err != nil {
-		log.Fatal("Could not load environment:", err)
+		log.Fatal("Could not load environment: ", err)
 	}
 
 	server := &certServer{config: config}

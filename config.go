@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"os"
 )
@@ -22,14 +23,11 @@ type VaultConfig struct {
 	SecretID string
 }
 
-// KeyReader is used to read the content of a file at the given path
-type KeyReader func(filename string) ([]byte, error)
-
 // environmentVars contains a list of all required environment variables for the gcert service to operate
 var environmentVars = [...]string{
 	"GCERT_CF_TOKEN",
 	"GCERT_USER_EMAIL",
-	"GCERT_USER_KEY_FILE",
+	"GCERT_USER_KEY",
 	"GCERT_USER_URI",
 	"VAULT_ADDR",
 	"VAULT_PATH",
@@ -39,7 +37,7 @@ var environmentVars = [...]string{
 
 // NewConfigFromEnv validates the required environment variables are present (and not empty) and then returns an
 // AppConfig configured using those environment variables.
-func NewConfigFromEnv(reader KeyReader) (*AppConfig, error) {
+func NewConfigFromEnv() (*AppConfig, error) {
 	// Make sure all environment variables have values
 	for _, envVar := range environmentVars {
 		if os.Getenv(envVar) == "" {
@@ -47,9 +45,9 @@ func NewConfigFromEnv(reader KeyReader) (*AppConfig, error) {
 		}
 	}
 
-	keyBytes, err := reader(os.Getenv("GCERT_USER_KEY_FILE"))
+	keyBytes, err := base64.StdEncoding.DecodeString(os.Getenv("GCERT_USER_KEY"))
 	if err != nil {
-		return &AppConfig{}, fmt.Errorf("error reading user key at %s: %s", os.Getenv("GCERT_USER_KEY_FILE"), err)
+		return &AppConfig{}, fmt.Errorf("error decoding user private key: %s\n", err)
 	}
 
 	return &AppConfig{
