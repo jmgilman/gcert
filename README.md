@@ -16,8 +16,8 @@ The gcert service expects the following environment variables to be defined:
 
 * `GCERT_CF_TOKEN`: A CloudFlare API token with DNS:Edit and Zone:Read permissions for all glab domains
 * `GCERT_USER_EMAIL`: The email address of a registered user
-* `GCERT_USER_KEY_FILE`: The file path to the registered user's private key
-* `GCERT_USER_IRU`: The unique URI of the registered user
+* `GCERT_USER_KEY`: The private key (encoded with base64) of the registered user
+* `GCERT_USER_URI`: The unique URI of the registered user
 * `VAULT_ADDR`: The URL address of the Vault server to use
 * `VAULT_PATH`: The mount name for the AppRole auth method (i.e approle)
 * `VAULT_ROLE_ID`: The role ID to use for authenticating to the Vault server
@@ -47,3 +47,14 @@ It's possible to request a certificate which covers multiple domains, in which c
 Vault using each domain. This results in the same certificates being written multiple times, but helps remove ambiguity 
 as to which domains the certificates cover. For example, a request for test1.example.com and test2.example.com will
 result in the certificate details being written to `secret/ssl/test1.example.com` and `secret/ssl/test2.example.com`.
+
+## Docker
+
+The repo comes with all the necessary files to build and start the gcert process using Docker. All that is required is
+a valid Vault token and an associated server. To build and start the container:
+
+```
+$> ./run.sh $VAULT_TOKEN $VAULT_ADDR 0.0.0.0 8080
+```
+
+The service will automatically be brought up in a container (named `gcert`) and begin listening on `0.0.0.0:8080`.
