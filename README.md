@@ -54,7 +54,8 @@ The repo comes with all the necessary files to build and start the gcert process
 a valid Vault token and an associated server. To build and start the container:
 
 ```
-$> ./run.sh $VAULT_TOKEN $VAULT_ADDR 0.0.0.0 8080
+$> ./run.sh
 ```
 
-The service will automatically be brought up in a container (named `gcert`) and begin listening on `0.0.0.0:8080`.
+The run script assumes the default `$VAULT_TOKEN` and `$VAULT_ADDR` environment variables are already set. The service 
+will automatically be brought up in a container (named `gcert`) and begin listening on `0.0.0.0:8080`.
