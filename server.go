@@ -10,6 +10,22 @@ type certServer struct {
 	config *AppConfig
 }
 
+type AppConfig struct {
+	Email      string
+	PrivateKey []byte
+	URI        string
+	CFToken    string
+	VaultCfg   VaultConfig
+}
+
+// VaultConfig contains the configuration data for authenticating and writing against a Vault server
+type VaultConfig struct {
+	Address  string
+	Path     string
+	RoleID   string
+	SecretID string
+}
+
 var EndPoints = [...]string{
 	"https://acme-v02.api.letsencrypt.org/directory",
 	"https://acme-staging-v02.api.letsencrypt.org/directory",

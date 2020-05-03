@@ -14,7 +14,6 @@ RUN go build .
 # Build gcert service
 RUN mkdir /build/gcert
 COPY . /build/gcert
-COPY files /build/gcert/files
 COPY proto /build/gcert/proto
 
 WORKDIR /build/gcert
@@ -31,6 +30,4 @@ WORKDIR /opt
 COPY --from=staging --chown=appuser /usr/sbin/vault .
 COPY --from=staging --chown=appuser /build/vaultbot/vaultbot .
 COPY --from=staging --chown=appuser /build/gcert/gcert .
-COPY --from=staging --chown=appuser /build/gcert/files/init.sh .
-RUN chmod +x init.sh
-ENTRYPOINT ["/opt/init.sh"]
+ENTRYPOINT ["./gcert"]
