@@ -11,7 +11,9 @@ const basePath = "secret/ssl/"
 
 // NewDefaultClient returns a Vault API client using default values from the environment
 func NewDefaultClient(c *AppConfig) (*api.Client, error) {
-	return api.NewClient(nil)
+	config := api.DefaultConfig()
+	config.Address = c.VaultCfg.Address
+	return api.NewClient(config)
 }
 
 // AuthenicateClient attempts to authentiate against the configured Vault server using the AppRole auth method. If it is
